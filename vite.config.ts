@@ -12,4 +12,9 @@ export default defineConfig({
     deployment: 'vercel',
     ssr: false,
   },
+  vite: {
+    build: {
+      chunkSizeWarningLimit: 2000,
+    }
+  }
 });
