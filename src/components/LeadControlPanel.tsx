@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useApp, getProperty, getTcm } from "@/lib/store";
+import { cn } from "@/lib/utils";
 import {
   Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription,
 } from "@/components/ui/sheet";
@@ -34,6 +35,9 @@ import { toast } from "sonner";
 import { useMountedNow } from "@/hooks/use-now";
 import { sendTourMessage as sendOwnerTourMessage } from "@/owner/messaging";
 import { useSettings } from "@/myt/lib/settings-context";
+import { calculateLeadScore } from "@/lib/scoring";
+import { isLeadOverdue } from "@/lib/overdue";
+import { intentFor } from "@/lib/engine";
 
 const TAG_OPTIONS = ["price-issue", "location-mismatch", "parents-involved", "urgent", "budget-low"];
 const OBJECTIONS = ["Budget", "Location", "Amenities", "Timing", "Parents", "Comparing options", "Other"];
@@ -69,8 +73,19 @@ type DrawerScheduleAnswers = {
 };
 
 export function LeadControlPanel() {
+  const { selectedLeadId, selectLead } = useApp();
+  return (
+    <Sheet open={!!selectedLeadId} onOpenChange={(o) => !o && selectLead(null)}>
+      <SheetContent side="right" className="w-full sm:max-w-[560px] p-0 flex flex-col">
+        {selectedLeadId && <LeadDetailView leadId={selectedLeadId} onClear={() => selectLead(null)} isDrawer />}
+      </SheetContent>
+    </Sheet>
+  );
+}
+
+export function LeadDetailView({ leadId, onClear, isDrawer = false }: { leadId: string, onClear?: () => void, isDrawer?: boolean }) {
   const {
-    selectedLeadId, selectLead, leads, properties, tours, activities, tcms,
+    leads, properties, tours, activities, tcms,
     setLeadStage, setLeadIntent, setLeadFollowUp, addLeadTag, removeLeadTag,
     scheduleTour, cancelTour, rescheduleTour, completeTour, setDecision, updatePostTour,
     addNote, logCall, sendMessage, autoAssignLead, startSequence, closeDeal,
@@ -78,12 +93,12 @@ export function LeadControlPanel() {
   } = useApp();
   const { settings } = useSettings();
 
-  const lead = useMemo(() => leads.find((l) => l.id === selectedLeadId) ?? null, [leads, selectedLeadId]);
+  const lead = useMemo(() => leads.find((l) => l.id === leadId) ?? null, [leads, leadId]);
 
   // Mark handoffs read when this lead opens
   useEffect(() => {
-    if (selectedLeadId) markHandoffsRead(selectedLeadId);
-  }, [selectedLeadId, markHandoffsRead]);
+    if (leadId) markHandoffsRead(leadId);
+  }, [leadId, markHandoffsRead]);
 
   const leadTours = useMemo(
     () => (lead ? tours.filter((t) => t.leadId === lead.id).sort((a, b) => +new Date(b.scheduledAt) - +new Date(a.scheduledAt)) : []),
@@ -116,7 +131,7 @@ export function LeadControlPanel() {
     tourType: "physical",
   });
   const [tab, setTab] = useState("control");
-  const [, mounted] = useMountedNow();
+  const [now, mounted] = useMountedNow();
 
   // Note state
   const [note, setNote] = useState("");
@@ -145,6 +160,9 @@ export function LeadControlPanel() {
 
   if (!lead) return null;
 
+  const score = calculateLeadScore(lead, now);
+  const isOverdue = isLeadOverdue(lead, now);
+
   const tcm = getTcm(lead.assignedTcmId);
 
   const handleSchedule = () => {
@@ -167,30 +185,40 @@ export function LeadControlPanel() {
   };
 
   return (
-    <Sheet open={!!selectedLeadId} onOpenChange={(o) => !o && selectLead(null)}>
-      <SheetContent side="right" className="w-full sm:max-w-[560px] p-0 flex flex-col">
+    <div className={cn("flex flex-col h-full", !isDrawer && "bg-card border border-border rounded-xl shadow-sm overflow-hidden")}>
         {/* Header block */}
-        <SheetHeader className="px-5 py-4 border-b border-border space-y-2">
+        <div className="px-5 py-4 border-b border-border space-y-2">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <SheetTitle className="font-display text-lg leading-tight">{lead.name}</SheetTitle>
-              <SheetDescription className="text-xs">
+              <div className="font-display text-xl font-bold leading-tight">{lead.name}</div>
+              <div className="text-xs text-muted-foreground mt-0.5">
                 {lead.phone} · via {lead.source}
-              </SheetDescription>
+              </div>
             </div>
-            <button
-              onClick={() => selectLead(null)}
-              className="h-7 w-7 rounded-md hover:bg-muted flex items-center justify-center"
-              aria-label="Close"
-            >
-              <X className="h-4 w-4" />
-            </button>
+            {onClear && (
+              <button
+                onClick={onClear}
+                className="h-7 w-7 rounded-md hover:bg-muted flex items-center justify-center"
+                aria-label="Close"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             <StageBadge stage={lead.stage} />
-            <IntentChip intent={lead.intent} />
-            <ConfidenceBar value={lead.confidence} />
+            <IntentChip intent={intentFor(score)} />
+            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-accent/10 border border-accent/20">
+              <Zap className="h-3 w-3 text-accent" />
+              <span className="text-[10px] font-bold text-accent">Score: {score}</span>
+            </div>
             <ObjectionTag leadId={lead.id} />
+            {isOverdue && (
+              <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-destructive/10 border border-destructive/20 animate-pulse">
+                <AlertTriangle className="h-3 w-3 text-destructive" />
+                <span className="text-[10px] font-bold text-destructive uppercase">SLA Breach</span>
+              </div>
+            )}
           </div>
           <div className="grid grid-cols-3 gap-2 pt-1 text-xs">
             <Meta icon={CalendarIcon} label="Move-in" value={format(new Date(lead.moveInDate), "MMM d")} />
@@ -198,7 +226,7 @@ export function LeadControlPanel() {
             <Meta icon={MapPin} label="Area" value={lead.preferredArea} />
           </div>
           <div className="text-[11px] text-muted-foreground">Assigned · {tcm?.name ?? "—"} ({tcm?.zone ?? "—"})</div>
-        </SheetHeader>
+        </div>
 
         {/* CRM 10x — commitment banner + 48h post-visit gate */}
         <CommitmentBanner lead={lead} />
@@ -711,8 +739,7 @@ export function LeadControlPanel() {
             </TabsContent>
           </Tabs>
         </div>
-      </SheetContent>
-    </Sheet>
+      </div>
   );
 }
 

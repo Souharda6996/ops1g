@@ -8,6 +8,7 @@ import { useMemo, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import type { LeadStage } from "@/lib/types";
 import { useMountedNow } from "@/hooks/use-now";
+import { calculateLeadScore } from "@/lib/scoring";
 
 export const Route = createFileRoute("/leads")({
   head: () => ({
@@ -18,10 +19,10 @@ export const Route = createFileRoute("/leads")({
 
 function LeadsPage() {
   const { leads, tcms, selectLead } = useApp();
-  const [, mounted] = useMountedNow();
+  const [now, mounted] = useMountedNow();
   const [q, setQ] = useState("");
   const [stage, setStage] = useState<string>("all");
-  const [sortBy, setSortBy] = useState<"confidence" | "moveIn" | "updated">("confidence");
+  const [sortBy, setSortBy] = useState<"score" | "confidence" | "moveIn" | "updated">("score");
 
   const filtered = useMemo(() => {
     const list = leads.filter((l) => {
@@ -30,12 +31,13 @@ function LeadsPage() {
       return true;
     });
     list.sort((a, b) => {
+      if (sortBy === "score") return calculateLeadScore(b, now) - calculateLeadScore(a, now);
       if (sortBy === "confidence") return b.confidence - a.confidence;
       if (sortBy === "moveIn") return +new Date(a.moveInDate) - +new Date(b.moveInDate);
       return +new Date(b.updatedAt) - +new Date(a.updatedAt);
     });
     return list;
-  }, [leads, q, stage, sortBy]);
+  }, [leads, q, stage, sortBy, now]);
 
   return (
     <AppShell>
@@ -59,6 +61,7 @@ function LeadsPage() {
             <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
               <SelectTrigger className="h-9 w-44 text-sm"><SelectValue /></SelectTrigger>
               <SelectContent>
+                <SelectItem value="score">Sort: Lead Score</SelectItem>
                 <SelectItem value="confidence">Sort: Confidence</SelectItem>
                 <SelectItem value="moveIn">Sort: Move-in date</SelectItem>
                 <SelectItem value="updated">Sort: Last updated</SelectItem>
@@ -92,7 +95,10 @@ function LeadsPage() {
                     <div className="col-span-2"><StageBadge stage={l.stage} /></div>
                     <div className="col-span-2 flex items-center gap-2">
                       <IntentChip intent={l.intent} />
-                      <ConfidenceBar value={l.confidence} />
+                      <div className="flex flex-col gap-0.5">
+                        <ConfidenceBar value={calculateLeadScore(l, now)} />
+                        <div className="text-[9px] font-mono font-bold text-accent">Score: {calculateLeadScore(l, now)}</div>
+                      </div>
                     </div>
                     <div className="col-span-2 text-xs">
                       <div>{l.preferredArea}</div>

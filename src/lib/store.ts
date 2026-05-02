@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import type {
   ActivityLog, FollowUp, Lead, Property, Role, TCM, Tour,
   PostTourUpdate, ClientDecision, LeadStage, Intent,
@@ -65,7 +66,9 @@ interface AppState {
   closeDeal: (input: { leadId: string; tourId: string; propertyId: string; tcmId: string; amount: number }) => void;
 }
 
-export const useApp = create<AppState>((set, get) => ({
+export const useApp = create<AppState>()(
+  persist(
+  (set, get) => ({
   role: "flow-ops",
   currentTcmId: "tcm-1",
   setRole: (r) => set({ role: r }),
@@ -455,7 +458,22 @@ export const useApp = create<AppState>((set, get) => ({
         : undefined,
     });
   },
-}));
+  }),
+  {
+    name: "gharpayy-crm-state",
+    partialize: (state) => ({
+      leads: state.leads,
+      tours: state.tours,
+      followUps: state.followUps,
+      handoffs: state.handoffs,
+      sequences: state.sequences,
+      bookings: state.bookings,
+      activities: state.activities,
+      role: state.role,
+      currentTcmId: state.currentTcmId,
+    }),
+  }
+));
 
 function pushActivity(
   set: (fn: (s: AppState) => Partial<AppState>) => void,

@@ -17,6 +17,7 @@ import { Route as SequencesRouteImport } from './routes/sequences'
 import { Route as RevivalRouteImport } from './routes/revival'
 import { Route as RevenueRouteImport } from './routes/revenue'
 import { Route as QueueRouteImport } from './routes/queue'
+import { Route as PipelineRouteImport } from './routes/pipeline'
 import { Route as ManagerRouteImport } from './routes/manager'
 import { Route as LeadsRouteImport } from './routes/leads'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
@@ -63,6 +64,7 @@ import { Route as MytDraftsRouteImport } from './routes/myt/drafts'
 import { Route as MytCalendarRouteImport } from './routes/myt/calendar'
 import { Route as MytBookingsRouteImport } from './routes/myt/bookings'
 import { Route as LeadsAddRouteImport } from './routes/leads.add'
+import { Route as LeadsLeadIdRouteImport } from './routes/leads.$leadId'
 import { Route as OwnerMediaRoomIdRouteImport } from './routes/owner/media.$roomId'
 import { Route as MytTourIdRouteImport } from './routes/myt/tour.$id'
 import { Route as MytTcmPerformanceRouteImport } from './routes/myt/tcm.performance'
@@ -108,6 +110,11 @@ const RevenueRoute = RevenueRouteImport.update({
 const QueueRoute = QueueRouteImport.update({
   id: '/queue',
   path: '/queue',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PipelineRoute = PipelineRouteImport.update({
+  id: '/pipeline',
+  path: '/pipeline',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ManagerRoute = ManagerRouteImport.update({
@@ -340,6 +347,11 @@ const LeadsAddRoute = LeadsAddRouteImport.update({
   path: '/add',
   getParentRoute: () => LeadsRoute,
 } as any)
+const LeadsLeadIdRoute = LeadsLeadIdRouteImport.update({
+  id: '/$leadId',
+  path: '/$leadId',
+  getParentRoute: () => LeadsRoute,
+} as any)
 const OwnerMediaRoomIdRoute = OwnerMediaRoomIdRouteImport.update({
   id: '/owner/media/$roomId',
   path: '/owner/media/$roomId',
@@ -386,6 +398,7 @@ export interface FileRoutesByFullPath {
   '/leaderboard': typeof LeaderboardRoute
   '/leads': typeof LeadsRouteWithChildren
   '/manager': typeof ManagerRoute
+  '/pipeline': typeof PipelineRoute
   '/queue': typeof QueueRoute
   '/revenue': typeof RevenueRoute
   '/revival': typeof RevivalRoute
@@ -394,6 +407,7 @@ export interface FileRoutesByFullPath {
   '/today': typeof TodayRoute
   '/tours': typeof ToursRoute
   '/zone-brain': typeof ZoneBrainRoute
+  '/leads/$leadId': typeof LeadsLeadIdRoute
   '/leads/add': typeof LeadsAddRoute
   '/myt/bookings': typeof MytBookingsRoute
   '/myt/calendar': typeof MytCalendarRoute
@@ -448,6 +462,7 @@ export interface FileRoutesByTo {
   '/leaderboard': typeof LeaderboardRoute
   '/leads': typeof LeadsRouteWithChildren
   '/manager': typeof ManagerRoute
+  '/pipeline': typeof PipelineRoute
   '/queue': typeof QueueRoute
   '/revenue': typeof RevenueRoute
   '/revival': typeof RevivalRoute
@@ -456,6 +471,7 @@ export interface FileRoutesByTo {
   '/today': typeof TodayRoute
   '/tours': typeof ToursRoute
   '/zone-brain': typeof ZoneBrainRoute
+  '/leads/$leadId': typeof LeadsLeadIdRoute
   '/leads/add': typeof LeadsAddRoute
   '/myt/bookings': typeof MytBookingsRoute
   '/myt/calendar': typeof MytCalendarRoute
@@ -511,6 +527,7 @@ export interface FileRoutesById {
   '/leaderboard': typeof LeaderboardRoute
   '/leads': typeof LeadsRouteWithChildren
   '/manager': typeof ManagerRoute
+  '/pipeline': typeof PipelineRoute
   '/queue': typeof QueueRoute
   '/revenue': typeof RevenueRoute
   '/revival': typeof RevivalRoute
@@ -519,6 +536,7 @@ export interface FileRoutesById {
   '/today': typeof TodayRoute
   '/tours': typeof ToursRoute
   '/zone-brain': typeof ZoneBrainRoute
+  '/leads/$leadId': typeof LeadsLeadIdRoute
   '/leads/add': typeof LeadsAddRoute
   '/myt/bookings': typeof MytBookingsRoute
   '/myt/calendar': typeof MytCalendarRoute
@@ -575,6 +593,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/leads'
     | '/manager'
+    | '/pipeline'
     | '/queue'
     | '/revenue'
     | '/revival'
@@ -583,6 +602,7 @@ export interface FileRouteTypes {
     | '/today'
     | '/tours'
     | '/zone-brain'
+    | '/leads/$leadId'
     | '/leads/add'
     | '/myt/bookings'
     | '/myt/calendar'
@@ -637,6 +657,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/leads'
     | '/manager'
+    | '/pipeline'
     | '/queue'
     | '/revenue'
     | '/revival'
@@ -645,6 +666,7 @@ export interface FileRouteTypes {
     | '/today'
     | '/tours'
     | '/zone-brain'
+    | '/leads/$leadId'
     | '/leads/add'
     | '/myt/bookings'
     | '/myt/calendar'
@@ -699,6 +721,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/leads'
     | '/manager'
+    | '/pipeline'
     | '/queue'
     | '/revenue'
     | '/revival'
@@ -707,6 +730,7 @@ export interface FileRouteTypes {
     | '/today'
     | '/tours'
     | '/zone-brain'
+    | '/leads/$leadId'
     | '/leads/add'
     | '/myt/bookings'
     | '/myt/calendar'
@@ -762,6 +786,7 @@ export interface RootRouteChildren {
   LeaderboardRoute: typeof LeaderboardRoute
   LeadsRoute: typeof LeadsRouteWithChildren
   ManagerRoute: typeof ManagerRoute
+  PipelineRoute: typeof PipelineRoute
   QueueRoute: typeof QueueRoute
   RevenueRoute: typeof RevenueRoute
   RevivalRoute: typeof RevivalRoute
@@ -862,6 +887,13 @@ declare module '@tanstack/react-router' {
       path: '/queue'
       fullPath: '/queue'
       preLoaderRoute: typeof QueueRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pipeline': {
+      id: '/pipeline'
+      path: '/pipeline'
+      fullPath: '/pipeline'
+      preLoaderRoute: typeof PipelineRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/manager': {
@@ -1186,6 +1218,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LeadsAddRouteImport
       parentRoute: typeof LeadsRoute
     }
+    '/leads/$leadId': {
+      id: '/leads/$leadId'
+      path: '/$leadId'
+      fullPath: '/leads/$leadId'
+      preLoaderRoute: typeof LeadsLeadIdRouteImport
+      parentRoute: typeof LeadsRoute
+    }
     '/owner/media/$roomId': {
       id: '/owner/media/$roomId'
       path: '/owner/media/$roomId'
@@ -1232,10 +1271,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface LeadsRouteChildren {
+  LeadsLeadIdRoute: typeof LeadsLeadIdRoute
   LeadsAddRoute: typeof LeadsAddRoute
 }
 
 const LeadsRouteChildren: LeadsRouteChildren = {
+  LeadsLeadIdRoute: LeadsLeadIdRoute,
   LeadsAddRoute: LeadsAddRoute,
 }
 
@@ -1281,6 +1322,7 @@ const rootRouteChildren: RootRouteChildren = {
   LeaderboardRoute: LeaderboardRoute,
   LeadsRoute: LeadsRouteWithChildren,
   ManagerRoute: ManagerRoute,
+  PipelineRoute: PipelineRoute,
   QueueRoute: QueueRoute,
   RevenueRoute: RevenueRoute,
   RevivalRoute: RevivalRoute,

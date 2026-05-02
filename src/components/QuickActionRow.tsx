@@ -5,6 +5,7 @@ import { ConfidenceBar, IntentChip, StageBadge } from "./atoms";
 import { toast } from "sonner";
 import type { Lead } from "@/lib/types";
 import { liveConfidence, intentFor } from "@/lib/engine";
+import { calculateLeadScore } from "@/lib/scoring";
 import { useMountedNow } from "@/hooks/use-now";
 
 /**
@@ -24,7 +25,8 @@ export function QuickActionRow({
   const [now, mounted] = useMountedNow();
   const tcm = tcms.find((t) => t.id === lead.assignedTcmId);
   // Use static lead values until mounted to avoid SSR mismatch
-  const live = mounted ? liveConfidence(lead, tours, now) : lead.confidence;
+  // Use static lead values until mounted to avoid SSR mismatch
+  const live = mounted ? calculateLeadScore(lead, now) : lead.confidence;
   const liveIntent = mounted ? intentFor(live) : lead.intent;
 
   const ring = {

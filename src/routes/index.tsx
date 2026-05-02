@@ -9,6 +9,7 @@ import { useMountedNow } from "@/hooks/use-now";
 import { buildDoNextQueue, liveConfidence, intentFor } from "@/lib/engine";
 import { scanRevivals } from "@/lib/revival";
 import { QuickActionRow } from "@/components/QuickActionRow";
+import { calculateLeadScore } from "@/lib/scoring";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -37,10 +38,20 @@ function DashboardPage() {
 
   // Live, decayed view of every lead
   const liveLeads = useMemo(
-    () => leads.map((l) => ({ ...l, confidence: liveConfidence(l, tours, now), intent: intentFor(liveConfidence(l, tours, now)) })),
+    () => leads.map((l) => ({ 
+      ...l, 
+      score: calculateLeadScore(l, now),
+      confidence: liveConfidence(l, tours, now), 
+      intent: intentFor(calculateLeadScore(l, now)) 
+    })),
     [leads, tours, now],
   );
-  const hotLeads = liveLeads.filter((l) => l.intent === "hot" && l.stage !== "booked" && l.stage !== "dropped");
+  const hotLeads = useMemo(
+    () => [...liveLeads]
+      .filter((l) => l.stage !== "booked" && l.stage !== "dropped")
+      .sort((a, b) => b.score - a.score),
+    [liveLeads]
+  );
   const incompleteTours = tours.filter((t) => t.status === "completed" && !t.postTour.filledAt);
   const todayTours = tours.filter((t) => t.status === "scheduled" && sameDay(+new Date(t.scheduledAt), now));
   const booked = tours.filter((t) => t.decision === "booked").length;

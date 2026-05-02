@@ -3,7 +3,7 @@ import {
   LayoutDashboard, Target, CalendarPlus, ClipboardList, Boxes, Activity,
   Building2, Search, Sun, Command, Trophy, Sparkles, MessageSquare,
   IndianRupee, MapPin, Zap, Users, Home, Calendar, Store, Swords, Settings, AlertTriangle,
-  ShieldCheck, Inbox, Camera, HelpCircle, Layers, HeartPulse,
+  ShieldCheck, Inbox, Camera, HelpCircle, Layers, HeartPulse, Kanban,
 } from "lucide-react";
 import { NotificationCenter } from "./NotificationCenter";
 import { ProfileMenu } from "./ProfileMenu";
@@ -123,10 +123,10 @@ export function AppShell({ children }: { children: ReactNode }) {
       { to: "/today", label: "Today", icon: Sun, badge: queue.length },
       { to: "/inbox", label: "Inbox", icon: Inbox },
       { to: "/myt/leads", label: "Leads", icon: Target, accent: true },
+      { to: "/pipeline", label: "Pipeline", icon: Kanban },
       { to: "/myt/schedule", label: "Schedule", icon: CalendarPlus },
       { to: "/calendar", label: "Calendar", icon: Calendar },
-      { to: "/myt/marketplace", label: "Marketplace", icon: Store },
-      { to: "/supply-hub", label: "Supply Hub", icon: Layers },
+      { to: "/inventory", label: "Inventory", icon: Building2 },
       { to: "/sequences", label: "Outreach", icon: Zap },
     ],
     tcm: [
