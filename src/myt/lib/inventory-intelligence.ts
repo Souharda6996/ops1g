@@ -1,173 +1,181 @@
-import { zones, teamMembers } from './mock-data';
-import { PGS } from '@/supply-hub/data/pgs';
-import { DISTANCE } from '@/supply-hub/data/areas';
-import { matchLead, type Lead as SupplyLead } from '@/supply-hub/lib/matcher';
-import type { Booking, Lead, Room, RoomBlock, Tour } from './types';
-import type { PG } from '@/supply-hub/data/types';
-import { normalizeRoomForSupply } from '@/lib/quickad-shared';
-
-const norm = (v: string) => (v || '').toLowerCase().trim();
+import { Lead, Property, Room, RoomBlock, Tour, TeamMember, Zone, Booking } from "./types";
+import { properties, rooms as allRooms } from "./properties-seed";
+import { teamMembers, zones, tours as allTours } from "./mock-data";
 
 export interface InventoryFit {
   propertyId: string;
   propertyName: string;
-  zoneId: string;
-  area: string;
-  locality?: string;
-  mapsLink?: string;
   availableBeds: number;
-  availableRooms: number;
+  distanceKm: number | null;
+  area: string;
   basePrice: number;
-  priceFit: 'inside' | 'stretch' | 'low-fit';
   score: number;
   reason: string;
-  distanceKm: number | null;
-  distanceFromHere: string;
-  distanceFromThere: string;
-  source: 'supply-hub';
 }
 
-export interface AreaOperatingRow {
-  zoneId: string;
-  area: string;
-  leads: number;
-  qualifiedLeads: number;
-  availableBeds: number;
-  toursToday: number;
-  bookings: number;
-  tcmCapacity: number;
-  signal: 'push-demand' | 'push-tours' | 'protect-capacity' | 'balanced';
-  nextAction: string;
-}
-
-export function detectAreaZone(areaText: string) {
-  const text = norm(areaText);
-  const exact = zones.find((z) => text.includes(norm(z.area)) || norm(z.area).includes(text));
-  if (exact) return exact;
-  const pg = PGS.find((p) => text.includes(norm(p.area)) || norm(p.area).includes(text) || norm(p.locality).includes(text));
-  return zones.find((z) => norm(z.area) === norm(pg?.area ?? '')) ?? zones[0];
-}
-
-export const supplyHubProperties = PGS.map((pg) => ({
-  id: pg.id,
-  name: pg.name,
-  zoneId: detectAreaZone(pg.area).id,
-  area: pg.area,
-  address: pg.locality,
-  basePrice: pg.prices.min || pg.prices.double || pg.prices.single || pg.prices.triple || 0,
-  mapsLink: pg.mapsLink,
-  pg,
-}));
-
-export function supplyBedsForPg(pg: PG, blocks: RoomBlock[] = []) {
-  const bedTypes = [pg.prices.single, pg.prices.double, pg.prices.triple].filter((v) => v > 0).length;
-  const activeBlocks = blocks.filter((b) => b.propertyId === pg.id && b.status === 'active' && new Date(b.expiresAt).getTime() > Date.now()).length;
-  return { beds: Math.max(0, bedTypes - activeBlocks), rooms: bedTypes };
-}
-
-export function availableBedsForProperty(propertyId: string, rooms: Room[], blocks: RoomBlock[]) {
-  const supplyPg = PGS.find((p) => p.id === propertyId);
-  if (supplyPg) return supplyBedsForPg(supplyPg, blocks);
-  const activeBlocks = new Set(
-    blocks
-      .filter((b) => b.propertyId === propertyId && b.status === 'active' && new Date(b.expiresAt).getTime() > Date.now())
-      .map((b) => b.roomId),
+export function detectAreaZone(text: string): Zone {
+  const normalized = text.toLowerCase();
+  const matched = zones.find(z => 
+    normalized.includes(z.area.toLowerCase()) || 
+    normalized.includes(z.name.toLowerCase())
   );
-  const propRooms = rooms.filter((r) => r.propertyId === propertyId);
-  const beds = propRooms.reduce((sum, room) => sum + Math.max(0, room.bedsTotal - room.bedsOccupied - (activeBlocks.has(room.id) ? 1 : 0)), 0);
-  const openRooms = propRooms.filter((room) => room.bedsOccupied < room.bedsTotal && !activeBlocks.has(room.id)).length;
-  return { beds, rooms: openRooms };
+  return matched || zones[zones.length - 1]; // Fallback to last zone (Others)
 }
 
-export function bestInventoryFits(input: {
+interface BestFitOptions {
   areaText: string;
   budget?: number;
   room?: string;
   rooms: Room[];
   blocks: RoomBlock[];
   limit?: number;
-}): InventoryFit[] {
-  const zone = detectAreaZone(input.areaText);
-  const budget = input.budget || 0;
-  const supplyLead: SupplyLead = {
-    area: input.areaText,
-    gender: 'Any',
-    budgetMin: budget ? Math.max(7000, Math.round(budget * 0.85)) : 7000,
-    budgetMax: budget || 50000,
-    audience: 'Both',
-    occupancy: normalizeRoomForSupply(input.room),
-  };
-  return matchLead(supplyLead)
-    .filter((m) => !m.disqualified && m.total > 0)
-    .map((m) => {
-      const p = m.pg;
-      const inv = supplyBedsForPg(p, input.blocks);
-      const basePrice = m.bedPrice ?? (p.prices.min || p.prices.double || p.prices.single || p.prices.triple || 0);
-      const priceDelta = budget ? Math.abs(basePrice - budget) / Math.max(1, budget) : 0.2;
-      const priceFit: InventoryFit['priceFit'] = !budget || priceDelta <= 0.15 ? 'inside' : basePrice > budget ? 'stretch' : 'low-fit';
-      const score = Math.max(0, Math.round(m.total + Math.min(10, inv.beds * 2)));
-      return {
-        propertyId: p.id,
-        propertyName: p.name,
-        zoneId: detectAreaZone(p.area).id,
-        area: p.area,
-        locality: p.locality,
-        mapsLink: p.mapsLink,
-        availableBeds: inv.beds,
-        availableRooms: inv.rooms,
-        basePrice,
-        priceFit,
-        score,
-        reason: `${inv.beds} Supply Hub beds · ${m.bedLabel} · ${m.commuteKm !== null ? `${m.commuteKm} km` : p.area} · ${priceFit === 'inside' ? 'budget fit' : priceFit === 'stretch' ? 'slight stretch' : 'under budget'}`,
-        distanceKm: m.commuteKm,
-        distanceFromHere: m.commuteKm !== null ? `${p.name} → lead: ${m.commuteKm} km` : `${p.name} → lead: area estimate pending`,
-        distanceFromThere: distanceBetweenAreas(p.area, zone.area),
-        source: 'supply-hub' as const,
-      };
-    })
-    .filter((fit) => fit.availableBeds > 0)
-    .sort((a, b) => b.score - a.score || b.availableBeds - a.availableBeds)
-    .slice(0, input.limit ?? 3);
 }
 
-function distanceBetweenAreas(fromArea: string, toArea: string) {
-  const fromKey = Object.keys(DISTANCE).find((k) => norm(k) === norm(fromArea) || norm(fromArea).includes(norm(k)));
-  const row = fromKey ? DISTANCE[fromKey] : undefined;
-  const toKey = row ? Object.keys(row).find((k) => norm(k) === norm(toArea) || norm(toArea).includes(norm(k))) : undefined;
-  return toKey && row ? `${fromArea} → ${toArea}: ${row[toKey]} km` : `${fromArea} → ${toArea}: area estimate pending`;
-}
+export function bestInventoryFits({ areaText, budget, room, rooms, blocks, limit = 3 }: BestFitOptions): InventoryFit[] {
+  const zone = detectAreaZone(areaText);
+  
+  const fits = properties.map(p => {
+    let score = 0;
+    const reasons: string[] = [];
+    
+    // 1. Area Match
+    if (p.area.toLowerCase() === zone.area.toLowerCase()) {
+      score += 50;
+      reasons.push("Exact area match");
+    } else if (p.zoneId === zone.id) {
+      score += 30;
+      reasons.push("Same zone");
+    }
 
-export function recommendedTcm(tours: Tour[], zoneId: string) {
-  const tcms = teamMembers.filter((m) => m.role === 'tcm' && m.zoneId === zoneId);
-  return [...tcms].sort((a, b) => todaysLoad(tours, a.id) - todaysLoad(tours, b.id))[0] ?? null;
-}
+    // 2. Availability
+    const propRooms = rooms.filter(r => r.propertyId === p.id);
+    const availableBeds = propRooms.reduce((sum, r) => sum + (r.bedsTotal - r.bedsOccupied), 0);
+    const activeBlocks = blocks.filter(b => b.propertyId === p.id && b.status === 'active').length;
+    const netAvailable = Math.max(0, availableBeds - activeBlocks);
 
-export function recommendedFlowOps(zoneId: string) {
-  return teamMembers.find((m) => m.role === 'flow-ops' && m.zoneId === zoneId) ?? teamMembers.find((m) => m.role === 'flow-ops') ?? null;
-}
+    if (netAvailable > 0) {
+      score += 20;
+      reasons.push(`${netAvailable} beds available`);
+    } else {
+      score -= 50;
+      reasons.push("No vacancy");
+    }
 
-export function todaysLoad(tours: Tour[], memberId: string) {
-  const today = new Date().toISOString().split('T')[0];
-  return tours.filter((t) => t.tourDate === today && (t.assignedTo === memberId || t.scheduledBy === memberId) && t.status !== 'cancelled').length;
-}
+    // 3. Price Fit
+    if (budget && budget >= p.basePrice) {
+      score += 20;
+      reasons.push("Budget match");
+    } else if (budget && budget < p.basePrice) {
+      score -= 20;
+      reasons.push("Price above budget");
+    }
 
-export function buildAreaOperatingRows(input: { leads: Lead[]; tours: Tour[]; rooms: Room[]; blocks: RoomBlock[]; bookings: Booking[] }): AreaOperatingRow[] {
-  const today = new Date().toISOString().split('T')[0];
-  return zones.map((z) => {
-    const zoneProps = PGS.filter((p) => detectAreaZone(p.area).id === z.id);
-    const availableBeds = zoneProps.reduce((sum, p) => sum + supplyBedsForPg(p, input.blocks).beds, 0);
-    const leads = input.leads.filter((l) => detectAreaZone(l.area).id === z.id);
-    const toursToday = input.tours.filter((t) => t.zoneId === z.id && t.tourDate === today && t.status !== 'cancelled').length;
-    const bookings = input.bookings.filter((b) => norm(b.area) === norm(z.area)).length;
-    const tcmCapacity = Math.max(0, teamMembers.filter((m) => m.role === 'tcm' && m.zoneId === z.id).length * 8 - toursToday);
-    const signal: AreaOperatingRow['signal'] = availableBeds >= 8 && leads.length < 3 ? 'push-demand' : leads.length >= 3 && toursToday < Math.min(leads.length, 4) ? 'push-tours' : tcmCapacity < 2 ? 'protect-capacity' : 'balanced';
-    const nextAction = signal === 'push-demand'
-      ? `Create demand for ${availableBeds} live beds`
-      : signal === 'push-tours'
-        ? `Schedule ${Math.min(leads.length, availableBeds, 4)} Tours from matched leads`
-        : signal === 'protect-capacity'
-          ? 'Move soft Tours to another slot or TCM'
-          : 'Keep matching leads to available rooms';
-    return { zoneId: z.id, area: z.area, leads: leads.length, qualifiedLeads: leads.filter((l) => l.mytQualified).length, availableBeds, toursToday, bookings, tcmCapacity, signal, nextAction };
+    return {
+      propertyId: p.id,
+      propertyName: p.name,
+      availableBeds: netAvailable,
+      distanceKm: p.area === zone.area ? 0.5 : 2.5, // Mock distance
+      area: p.area,
+      basePrice: p.basePrice,
+      score,
+      reason: reasons.join(", ")
+    };
   });
+
+  return fits
+    .filter(f => f.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit);
+}
+
+export function recommendedFlowOps(zoneId: string): TeamMember | undefined {
+  return teamMembers.find(m => m.role === 'flow-ops' && m.zoneId === zoneId);
+}
+
+export function recommendedTcm(tours: Tour[], zoneId: string): TeamMember | undefined {
+  // Pick TCM in zone with least tours today
+  const tcmsInZone = teamMembers.filter(m => m.role === 'tcm' && m.zoneId === zoneId);
+  const today = new Date().toISOString().split('T')[0];
+  const tcmLoad = tcmsInZone.map(tcm => ({
+    tcm,
+    load: tours.filter(t => t.assignedTo === tcm.id && t.tourDate === today).length
+  }));
+  return tcmLoad.sort((a, b) => a.load - b.load)[0]?.tcm;
+}
+
+export function getAreaDemandPressure() {
+  const areaStats = zones.map(zone => {
+    const areaProps = properties.filter(p => p.zoneId === zone.id);
+    const areaRooms = allRooms.filter(r => areaProps.some(p => p.id === r.propertyId));
+    const totalVacancy = areaRooms.reduce((sum, r) => sum + (r.bedsTotal - r.bedsOccupied), 0);
+    const demand = allTours.filter(t => t.zoneId === zone.id).length;
+    
+    return {
+      area: zone.area,
+      totalVacancy,
+      demand,
+      pressure: totalVacancy > 15 ? "high-supply" : totalVacancy < 5 ? "high-demand" : "balanced"
+    };
+  });
+  return areaStats;
+}
+
+interface OperatingData {
+  leads: Lead[];
+  tours: Tour[];
+  rooms: Room[];
+  blocks: RoomBlock[];
+  bookings: Booking[];
+}
+
+export function buildAreaOperatingRows({ leads, tours, rooms, blocks, bookings }: OperatingData) {
+  const today = new Date().toISOString().split('T')[0];
+  
+  return zones.map(zone => {
+    const zoneLeads = leads.filter(l => detectAreaZone(l.area).id === zone.id).length;
+    const zoneTours = tours.filter(t => t.zoneId === zone.id && t.tourDate === today).length;
+    const zoneProps = properties.filter(p => p.zoneId === zone.id);
+    const zoneRooms = rooms.filter(r => zoneProps.some(p => p.id === r.propertyId));
+    const availableBeds = zoneRooms.reduce((sum, r) => sum + (r.bedsTotal - r.bedsOccupied), 0);
+    const tcmCount = teamMembers.filter(m => m.role === 'tcm' && m.zoneId === zone.id).length;
+    const bookingsCount = bookings.filter(b => b.area === zone.area && b.createdAt.startsWith(today)).length;
+    
+    let signal = "Balanced";
+    let nextAction = "Monitor funnel";
+    
+    if (availableBeds > 10 && zoneLeads < 5) {
+      signal = "High Supply";
+      nextAction = "Push marketing for leads";
+    } else if (zoneLeads > 15 && availableBeds < 3) {
+      signal = "High Demand";
+      nextAction = "Talk to owners for rooms";
+    } else if (zoneTours < 2 && zoneLeads > 5) {
+      signal = "Low Conversion";
+      nextAction = "Flow Ops: Schedule tours now";
+    }
+
+    return {
+      zoneId: zone.id,
+      area: zone.area,
+      leads: zoneLeads,
+      toursToday: zoneTours,
+      availableBeds,
+      tcmCapacity: tcmCount * 5, // 5 tours per TCM per day
+      bookings: bookingsCount,
+      signal,
+      nextAction
+    };
+  });
+}
+
+export const supplyHubProperties = properties;
+
+export function availableBedsForProperty(propertyId: string, rooms: Room[], blocks: RoomBlock[]) {
+  const propRooms = rooms.filter(r => r.propertyId === propertyId);
+  const total = propRooms.reduce((sum, r) => sum + (r.bedsTotal - r.bedsOccupied), 0);
+  const activeBlocks = blocks.filter(b => b.propertyId === propertyId && b.status === 'active').length;
+  return {
+    beds: Math.max(0, total - activeBlocks),
+    total
+  };
 }

@@ -342,6 +342,29 @@ export function buildCoachReport(input: CoachInput): CoachReport {
     }
   }
 
+  // Area-aware HR signals
+  if (role === "hr") {
+    const areaStats = zones.map(zone => {
+      const zoneTours = tours.filter(t => t.zoneId === zone.id && t.tourDate === new Date(now).toISOString().split('T')[0]);
+      const zoneLeads = leads.filter(l => l.preferredArea === zone.area);
+      const zoneProps = properties.filter(p => p.zoneId === zone.id);
+      const vacant = zoneProps.reduce((s, p) => s + p.vacantBeds, 0);
+      return { area: zone.area, tours: zoneTours.length, leads: zoneLeads.length, vacant };
+    });
+
+    const bleedArea = areaStats.find(s => s.vacant > 10 && s.tours < 2);
+    if (bleedArea) {
+      queueItems.push({
+        id: "hr-bleed",
+        kind: "hot-untouched", // Reuse kind for styling
+        title: `${bleedArea.area} is bleeding`,
+        why: `${bleedArea.vacant} vacant beds but only ${bleedArea.tours} tours today. Reassign top TCMs here.`,
+        score: 1100,
+        xp: 50,
+      });
+    }
+  }
+
   // De-dup + split into MISSED (SLA breach) vs TODO (still on time)
   const seen = new Set<string>();
   const ranked = queueItems
@@ -392,11 +415,17 @@ export function buildCoachReport(input: CoachInput): CoachReport {
 
   /* GREETING — driven by persona voice, with situational override on misses */
   const voice = voiceFor(persona, doneCount, target);
-  const greeting = voice.greeting;
-  const subline =
+  let greeting = voice.greeting;
+  let subline =
     missed.length > 0
       ? `${missed.length} miss${missed.length === 1 ? "" : "es"} to recover · ${todo.length} on deck.`
       : voice.subline;
+
+  // 30x Result-linked check
+  if (role === "flow-ops" && doneCount < target / 2 && new Date(now).getHours() > 14) {
+    greeting = `${persona.name.split(" ")[0]}, you are behind on tours.`;
+    subline = "Market matches available; schedule 2 more to hit target.";
+  }
 
   return {
     greeting,

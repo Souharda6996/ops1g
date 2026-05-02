@@ -263,26 +263,55 @@ export function QuickAddLeadPanel({ open, onClose }: Props) {
 
         <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3" onPaste={onAnyPaste}>
           {areaFit && (
-            <div className="rounded-md border border-primary/25 bg-primary/5 p-3 space-y-2">
+            <div className="rounded-md border border-primary/25 bg-primary/5 p-3 space-y-2 animate-in fade-in slide-in-from-top-1">
               <div className="flex items-start justify-between gap-2">
                 <div>
-                  <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Area Inventory Fit</div>
-          <div className="text-sm font-semibold text-foreground">{areaFit.zone.area} · {areaFit.fits[0]?.availableBeds ?? 0} Supply Hub beds live</div>
+                  <div className="text-[10px] uppercase tracking-wide text-primary/70 font-bold">Area Inventory Fit</div>
+                  <div className="text-sm font-bold text-foreground">
+                    {areaFit.zone.area} · {areaFit.fits[0]?.availableBeds ?? 0} Beds Available
+                  </div>
                 </div>
-                <Button type="button" size="sm" variant="secondary" className="h-7 text-[11px]" onClick={scheduleDraft} disabled={!areaFit.fits[0]}>
-                  <CalendarPlus className="h-3 w-3 mr-1" /> Best Tour
+                <Button 
+                  type="button" 
+                  size="sm" 
+                  variant="default" 
+                  className="h-8 text-[11px] bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm" 
+                  onClick={scheduleDraft} 
+                  disabled={!areaFit.fits[0]}
+                >
+                  <CalendarPlus className="h-3 w-3 mr-1.5" /> Schedule Tour
                 </Button>
               </div>
+
               <div className="grid gap-1.5">
                 {areaFit.fits.slice(0, 2).map((fit, i) => (
-                  <div key={fit.propertyId} className="rounded border border-border bg-background/70 px-2 py-1.5 text-[11px] flex items-center justify-between gap-2">
-                    <span className="font-medium truncate">{i === 0 ? 'Best' : 'Normal'} · {fit.propertyName}</span>
-                    <span className="text-muted-foreground shrink-0">{fit.availableBeds} beds · {fit.distanceKm !== null ? `${fit.distanceKm} km` : fit.area} · ₹{(fit.basePrice / 1000).toFixed(0)}k · {fit.score}</span>
+                  <div key={fit.propertyId} className={cn(
+                    "rounded-md border px-2.5 py-2 text-[11px] flex items-center justify-between gap-2 transition-all",
+                    i === 0 ? "bg-background border-primary/40 shadow-sm" : "bg-background/50 border-border"
+                  )}>
+                    <div className="flex flex-col gap-0.5 min-w-0">
+                      <span className="font-bold truncate flex items-center gap-1.5">
+                        {i === 0 && <Sparkles className="h-2.5 w-2.5 text-primary" />}
+                        {fit.propertyName}
+                      </span>
+                      <span className="text-muted-foreground truncate">{fit.reason}</span>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <div className="font-bold text-primary">₹{(fit.basePrice / 1000).toFixed(0)}k</div>
+                      <div className="text-[9px] text-muted-foreground">{fit.availableBeds} beds</div>
+                    </div>
                   </div>
                 ))}
               </div>
-              <div className="text-[10px] text-muted-foreground">
-                Flow Ops: {areaFit.flowOps?.name ?? 'Auto'} · TCM: {areaFit.tcm?.name ?? 'Auto'} · {areaFit.fits[0]?.reason ?? 'No matching inventory yet'}
+
+              <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-1 border-t border-primary/10">
+                <span className="flex items-center gap-1">
+                  <Users className="h-2.5 w-2.5" /> Ops: {areaFit.flowOps?.name.split(' ')[0] ?? 'Auto'}
+                </span>
+                <span className="flex items-center gap-1">
+                  <Trophy className="h-2.5 w-2.5" /> TCM: {areaFit.tcm?.name.split(' ')[0] ?? 'Auto'}
+                </span>
+                <span className="font-medium text-primary/80">Best property to pitch first</span>
               </div>
             </div>
           )}

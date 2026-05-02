@@ -25,19 +25,25 @@ export function IntentChip({ intent, className }: { intent: Intent; className?: 
 export function StageBadge({ stage }: { stage: LeadStage }) {
   const map: Record<LeadStage, string> = {
     "new": "bg-info/10 text-info border-info/20",
-    "contacted": "bg-secondary text-secondary-foreground border-border",
+    "parsed": "bg-secondary text-secondary-foreground border-border",
+    "qualified": "bg-accent/5 text-accent-foreground border-accent/20",
+    "inventory-matched": "bg-purple-500/10 text-purple-600 border-purple-200",
+    "options-shared": "bg-blue-500/10 text-blue-600 border-blue-200",
     "tour-scheduled": "bg-accent/10 text-accent border-accent/30",
     "tour-done": "bg-success/10 text-success border-success/20",
-    "negotiation": "bg-warning/15 text-warning-foreground border-warning/30",
+    "follow-up": "bg-warning/15 text-warning-foreground border-warning/30",
     "booked": "bg-success text-success-foreground border-transparent",
     "dropped": "bg-muted text-muted-foreground border-border",
   };
   const label: Record<LeadStage, string> = {
     "new": "New",
-    "contacted": "Contacted",
+    "parsed": "Parsed",
+    "qualified": "Qualified",
+    "inventory-matched": "Inv Matched",
+    "options-shared": "Options Shared",
     "tour-scheduled": "Tour Scheduled",
     "tour-done": "Tour Done",
-    "negotiation": "Negotiation",
+    "follow-up": "Follow-up",
     "booked": "Booked",
     "dropped": "Dropped",
   };

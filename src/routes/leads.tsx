@@ -53,7 +53,7 @@ function LeadsPage() {
               <SelectTrigger className="h-9 w-44 text-sm"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All stages</SelectItem>
-                {(["new","contacted","tour-scheduled","tour-done","negotiation","booked","dropped"] as LeadStage[]).map((s) => (
+                {(["new","parsed","qualified","inventory-matched","options-shared","tour-scheduled","tour-done","follow-up","booked","dropped"] as LeadStage[]).map((s) => (
                   <SelectItem key={s} value={s} className="capitalize">{s.replace("-", " ")}</SelectItem>
                 ))}
               </SelectContent>

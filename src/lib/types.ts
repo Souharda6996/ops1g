@@ -4,10 +4,13 @@ export type TourStatus = "scheduled" | "completed" | "no-show" | "cancelled";
 export type ClientDecision = "booked" | "thinking" | "dropped" | null;
 export type LeadStage =
   | "new"
-  | "contacted"
+  | "parsed"
+  | "qualified"
+  | "inventory-matched"
+  | "options-shared"
   | "tour-scheduled"
   | "tour-done"
-  | "negotiation"
+  | "follow-up"
   | "booked"
   | "dropped";
 

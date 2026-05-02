@@ -234,7 +234,7 @@ export const useApp = create<AppState>()(
               ...l,
               stage:
                 decision === "booked" ? "booked" :
-                decision === "dropped" ? "dropped" : "negotiation",
+                decision === "dropped" ? "dropped" : "follow-up",
               updatedAt: new Date().toISOString(),
             }
           : l,

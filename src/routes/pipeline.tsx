@@ -45,11 +45,14 @@ export const Route = createFileRoute("/pipeline")({
 });
 
 const STAGES: { id: LeadStage; label: string; color: string; bg: string; headerBg: string }[] = [
-  { id: "new", label: "New", color: "text-gray-600", bg: "bg-gray-50", headerBg: "bg-gray-500" },
-  { id: "contacted", label: "Contacted", color: "text-blue-600", bg: "bg-blue-50", headerBg: "bg-blue-500" },
+  { id: "new", label: "New Lead", color: "text-gray-600", bg: "bg-gray-50", headerBg: "bg-gray-500" },
+  { id: "parsed", label: "Parsed", color: "text-slate-600", bg: "bg-slate-50", headerBg: "bg-slate-500" },
+  { id: "qualified", label: "Qualified", color: "text-cyan-600", bg: "bg-cyan-50", headerBg: "bg-cyan-500" },
+  { id: "inventory-matched", label: "Inv Matched", color: "text-sky-600", bg: "bg-sky-50", headerBg: "bg-sky-500" },
+  { id: "options-shared", label: "Options Shared", color: "text-blue-600", bg: "bg-blue-50", headerBg: "bg-blue-500" },
   { id: "tour-scheduled", label: "Tour Scheduled", color: "text-amber-600", bg: "bg-amber-50", headerBg: "bg-amber-500" },
   { id: "tour-done", label: "Tour Done", color: "text-violet-600", bg: "bg-violet-50", headerBg: "bg-violet-500" },
-  { id: "negotiation", label: "Negotiation", color: "text-orange-600", bg: "bg-orange-50", headerBg: "bg-orange-500" },
+  { id: "follow-up", label: "Follow-up", color: "text-orange-600", bg: "bg-orange-50", headerBg: "bg-orange-500" },
   { id: "booked", label: "Booked", color: "text-green-600", bg: "bg-green-50", headerBg: "bg-green-500" },
   { id: "dropped", label: "Lost", color: "text-red-600", bg: "bg-red-50", headerBg: "bg-red-500" },
 ];

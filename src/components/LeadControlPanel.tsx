@@ -312,7 +312,7 @@ export function LeadDetailView({ leadId, onClear, isDrawer = false }: { leadId: 
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {(["new","contacted","tour-scheduled","tour-done","negotiation","booked","dropped"] as LeadStage[]).map((s) => (
+                    {(["new","parsed","qualified","inventory-matched","options-shared","tour-scheduled","tour-done","follow-up","booked","dropped"] as LeadStage[]).map((s) => (
                       <SelectItem key={s} value={s} className="text-sm capitalize">{s.replace("-", " ")}</SelectItem>
                     ))}
                   </SelectContent>
