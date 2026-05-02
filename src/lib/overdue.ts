@@ -14,11 +14,11 @@ export function isLeadOverdue(lead: Lead, now: number): boolean {
   switch (lead.stage) {
     case "new":
       return elapsedHours > 2;
-    case "contacted":
+    case "qualified":
       return elapsedHours > 24;
     case "tour-done":
       return elapsedHours > 6;
-    case "negotiation":
+    case "follow-up":
       return elapsedHours > 12;
     default:
       return false;
@@ -31,9 +31,9 @@ export function isLeadOverdue(lead: Lead, now: number): boolean {
 export function getStageSlaHours(stage: LeadStage): number | null {
   switch (stage) {
     case "new": return 2;
-    case "contacted": return 24;
+    case "qualified": return 24;
     case "tour-done": return 6;
-    case "negotiation": return 12;
+    case "follow-up": return 12;
     default: return null;
   }
 }

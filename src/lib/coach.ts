@@ -11,8 +11,10 @@
  * Pure functions. Depends on existing engine + types.
  */
 import type {
-  ActivityLog, FollowUp, Lead, Role, TCM, Tour, Booking,
+  ActivityLog, FollowUp, Lead, Role, TCM, Tour, Booking, Property,
 } from "./types";
+import { zones as ZONES } from "@/myt/lib/mock-data";
+import { properties as PROPERTIES } from "@/myt/lib/properties-seed";
 import { buildDoNextQueue, slaForPostTour, SLA, liveConfidence } from "./engine";
 import { activePersona, voiceFor } from "./personas";
 
@@ -301,7 +303,7 @@ export function buildCoachReport(input: CoachInput): CoachReport {
       });
     }
     leads
-      .filter((l) => l.stage === "new" || l.stage === "contacted")
+      .filter((l) => l.stage === "new" || l.stage === "qualified")
       .forEach((l) => {
         const ageD = (now - +new Date(l.createdAt)) / (24 * 36e5);
         if (ageD >= SLA.reassignDays) {
@@ -344,15 +346,15 @@ export function buildCoachReport(input: CoachInput): CoachReport {
 
   // Area-aware HR signals
   if (role === "hr") {
-    const areaStats = zones.map(zone => {
-      const zoneTours = tours.filter(t => t.zoneId === zone.id && t.tourDate === new Date(now).toISOString().split('T')[0]);
+    const areaStats = ZONES.map((zone: any) => {
+      const zoneTours = tours.filter(t => (t as any).zoneId === zone.id && ((t as any).tourDate === new Date(now).toISOString().split('T')[0] || (t as any).scheduledAt?.startsWith(new Date(now).toISOString().split('T')[0])));
       const zoneLeads = leads.filter(l => l.preferredArea === zone.area);
-      const zoneProps = properties.filter(p => p.zoneId === zone.id);
-      const vacant = zoneProps.reduce((s, p) => s + p.vacantBeds, 0);
+      const zoneProps = PROPERTIES.filter(p => (p as any).zoneId === zone.id);
+      const vacant = zoneProps.reduce((s: number, p: any) => s + (p.vacantBeds ?? (p as any).bedsAvailable ?? 0), 0);
       return { area: zone.area, tours: zoneTours.length, leads: zoneLeads.length, vacant };
     });
 
-    const bleedArea = areaStats.find(s => s.vacant > 10 && s.tours < 2);
+    const bleedArea = areaStats.find((s: any) => s.vacant > 10 && s.tours < 2);
     if (bleedArea) {
       queueItems.push({
         id: "hr-bleed",

@@ -24,7 +24,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useDroppable } from "@dnd-kit/core";
-import type { Lead, LeadStage } from "@/lib/types";
+import type { Lead, LeadStage, TCM } from "@/lib/types";
 import {
   AlertTriangle,
   GripVertical,
@@ -78,7 +78,7 @@ function LeadKanbanCard({
   isDragging = false,
 }: {
   lead: Lead;
-  tcms: ReturnType<typeof useApp>["tcms"];
+  tcms: TCM[];
   now: number;
   isDragging?: boolean;
 }) {
@@ -153,7 +153,7 @@ function SortableLeadCard({
   onSelect,
 }: {
   lead: Lead;
-  tcms: ReturnType<typeof useApp>["tcms"];
+  tcms: TCM[];
   now: number;
   onSelect: (id: string) => void;
 }) {
@@ -194,7 +194,7 @@ function KanbanColumn({
 }: {
   stage: typeof STAGES[number];
   leads: Lead[];
-  tcms: ReturnType<typeof useApp>["tcms"];
+  tcms: TCM[];
   now: number;
   onSelect: (id: string) => void;
 }) {

@@ -1,103 +1,77 @@
-# Internship Assignment: CRM Logic Finalization
+# Internship Assignment: 30x Operating Plan Integration
 
-**Project**: Gharpayy Lead Management CRM MVP  
-**Candidate**: Internship Finalization Phase  
-**Focus**: Core Business Logic, SLA Enforcement, and Dedicated UX.
+**Project**: Gharpayy CRM Finalization  
+**Status**: Complete & TypeScript Verified (0 Errors)
+**Focus**: Inventory-First Routing, Role-Based Dashboards, and 10-Stage Funnel.
 
 ---
 
 ## 🎯 Assignment Objective
-The goal was to transition the Gharpayy CRM from a "visual mockup" to a "data-driven MVP" by implementing the exact business rules provided in the brief. This included lead scoring, SLA clocks, and moving lead management from simple drawers to dedicated, URL-addressable pages.
+The objective was to finalize the **30x Inventory-Aligned Operating Plan** by integrating real-time inventory intelligence, standardizing the sales funnel, and ensuring each role (Flow Ops, TCM, HR) has a dedicated, high-discipline workspace.
 
-## 🛠 Features Implemented
+## 🛠 Key Implementations
 
-### 1. The Lead Scoring Algorithm (`scoring.ts`)
-I replaced placeholder random numbers with a deterministic weighted scoring engine.
-- **Rules**:
-  - `Budget > 12,000`: +20 points.
-  - `Move-in < 7 days`: +30 points.
-  - `Source = Referral`: +15 points.
-  - `Confidence > 70`: +25 points.
-- **Workflow Diagram**:
+### 1. The 10-Stage Sales Funnel
+I normalized the entire CRM to follow a strict 10-stage progression:
+1. `new` (Triage)
+2. `parsed` (Data Cleaned)
+3. `qualified` (Budget/Date Match)
+4. `inventory-matched` (Supply verified)
+5. `options-shared` (WhatsApp sent)
+6. `tour-scheduled` (Time locked)
+7. `tour-done` (Physical visit)
+8. `follow-up` (Negotiation)
+9. `booked` (Token paid)
+10. `dropped` (Lost)
+
+### 2. Inventory-First Quick Add
+Upgraded the `QuickAddLead` system to instantly match leads to available beds.
+- **Rules**: No manual property creation; must match verified Supply Hub PG data.
+- **Logic**: Budget fit + Area detection + Vacancy check.
+
+### 3. Role-Based Operating Dashboards
+- **Flow Ops Dashboard**: Optimized for "90-minute triage". Shows immediate area goals and available beds.
+- **TCM Dashboard**: Focuses on "Tour Closures". Ranked by intent and proximity.
+- **War Room**: Executive view for HR and Founders to monitor MRR and SLA breaches.
+
+### 4. SLA & Terminology Alignment
+- **Global terminology change**: "Visits" → **"Tours"** across all UI, logic, and state.
+- **SLA Enforcement**: Strict clocks for each stage (e.g., 2h for `new`, 6h for `tour-done`).
+
+## 📊 Workflow Diagrams
+
+### Lead-to-Booking Loop
 ```mermaid
 graph TD
-    A[New Lead] --> B{Scoring Engine}
-    B -->|Budget > 12k| C[+20 Points]
-    B -->|Move-in < 7d| D[+30 Points]
-    B -->|Source: Referral| E[+15 Points]
-    B -->|Confidence > 70| F[+25 Points]
-    
-    C --> G[Aggregated Score]
-    D --> G
-    E --> G
-    F --> G
-    
-    G --> H{Final Priority}
-    H -->|Score > 70| I[HOT]
-    H -->|Score 40-70| J[WARM]
-    H -->|Score < 40| K[COLD]
-
-    style I fill:#f97316,stroke:#ea580c,color:#fff
-    style J fill:#facc15,stroke:#eab308,color:#000
-    style K fill:#94a3b8,stroke:#64748b,color:#fff
+    A[Lead Ingest] --> B[Auto-Parse]
+    B --> C{Supply Fit?}
+    C -->|Yes| D[Options Shared]
+    C -->|No| E[Waitlist/Revival]
+    D --> F[Tour Scheduled]
+    F --> G[Tour Completed]
+    G --> H{Booked?}
+    H -->|Yes| I[MRR Locked]
+    H -->|No| J[Follow-up Cycle]
 ```
-
-### 2. SLA & Overdue Enforcement (`overdue.ts`)
-Implemented state-specific SLA clocks to ensure no lead goes unattended. 
-**SLA Lifecycle Workflow**:
-```mermaid
-graph LR
-    Start((Lead Creation)) --> New[New: 2h]
-    New --> Contacted[Contacted: 24h]
-    Contacted --> Tour[Tour Done: 6h]
-    Tour --> Neg[Negotiation: 12h]
-    Neg --> Booked((Booked))
-
-    New -.->|Breach| O1[Escalation]
-    Contacted -.->|Breach| O2[Escalation]
-    Tour -.->|Breach| O3[Escalation]
-    Neg -.->|Breach| O4[Escalation]
-
-    style O1 fill:#ef4444,color:#fff
-    style O2 fill:#ef4444,color:#fff
-    style O3 fill:#ef4444,color:#fff
-    style O4 fill:#ef4444,color:#fff
-```
-- **Thresholds**:
-  - `New`: 2 Hours
-  - `Contacted`: 24 Hours
-  - `Tour Done`: 6 Hours
-  - `Negotiation`: 12 Hours
-- **UI Integration**: Leads show a `[Xh SLA]` badge. If breached, an "SLA Breach" alert pulses on the card, and the card appears in the "Overdue Only" filtered view.
-
-### 3. Pipeline & Dashboard Integration
-- **Kanban Sorting**: The Pipeline now automatically sorts leads within each column by their calculated score (Hot leads at the top).
-- **Overdue Filter**: Added a global toggle to the Pipeline to isolate breached SLAs.
-- **Hot Pipeline**: Updated the Dashboard's "Hot Pipeline" section to use the live scoring engine instead of mock intent.
-
-### 4. Dedicated Lead Pages (`leads.$leadId.tsx`)
-Refactored the lead management UX from a side-drawer into a fully functional dedicated page.
-- **URL-Addressable**: Managers can now share links to specific leads (e.g., `/leads/l-5`).
-- **Full-Page Control**: The `LeadDetailView` was refactored to expand into a full-page layout while maintaining the same powerful controls as the drawer.
 
 ## 📸 Screenshots
 
-### Pipeline with SLA Badges
-![Pipeline View](./docs/screenshots/pipeline_sla.png)
-*Shows leads sorted by score with active SLA clocks.*
+### 1. Full Pipeline (10 Stages)
+![Pipeline View](./docs/screenshots/pipeline.png)
 
-### Dedicated Lead Page
-![Lead Page](./docs/screenshots/lead_page.png)
-*The full management interface for a specific lead.*
+### 2. Flow Ops Operating Cockpit
+![Flow Ops](./docs/screenshots/flow_ops.png)
 
-## 🧪 Verification & Persistence
-- **Persistence**: Verified that all updates (Stage changes, notes, etc.) are saved to LocalStorage via Zustand's `persist` middleware.
-- **Logic Accuracy**: Verified that high-budget, urgent referral leads correctly jump to the top of the "Hot" list.
+### 3. TCM Closure Board
+![TCM Dashboard](./docs/screenshots/tcm.png)
+
+### 4. Founder War Room
+![War Room](./docs/screenshots/war_room.png)
+
+## 🧪 Verification
+- **TypeScript**: Full project `tsc --noEmit` pass with **0 errors**.
+- **Data Integrity**: Cleaned legacy `contacted` and `negotiation` stages from all mock data.
+- **SLA Accuracy**: Verified that "SLA Breach" badges trigger correctly based on `updatedAt` timestamps.
 
 ---
-
-### **How to Verify**
-1. Navigate to the **Pipeline**.
-2. Note the score on **Karthik R.** (75).
-3. Toggle **"Overdue Only"** to see leads that have breached their stage-specific SLA.
-4. Click on a lead to visit their **Dedicated Detail Page**.
+**Assignment Ready for Submission.**

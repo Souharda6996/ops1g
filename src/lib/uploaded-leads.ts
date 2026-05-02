@@ -627,7 +627,7 @@ export const UPLOADED_LEADS: Lead[] = [
     "moveInDate": "1970-01-01T00:00:45.839Z",
     "preferredArea": "Koramangala",
     "assignedTcmId": "tcm-2",
-    "stage": "contacted",
+    "stage": "qualified",
     "intent": "hot",
     "confidence": 92,
     "tags": [
@@ -648,7 +648,7 @@ export const UPLOADED_LEADS: Lead[] = [
     "moveInDate": "1970-01-01T00:00:45.839Z",
     "preferredArea": "AECS Layout",
     "assignedTcmId": "tcm-3",
-    "stage": "contacted",
+    "stage": "qualified",
     "intent": "hot",
     "confidence": 88,
     "tags": [
@@ -668,7 +668,7 @@ export const UPLOADED_LEADS: Lead[] = [
     "moveInDate": "1970-01-01T00:00:45.839Z",
     "preferredArea": "Koramangala",
     "assignedTcmId": "tcm-4",
-    "stage": "contacted",
+    "stage": "qualified",
     "intent": "hot",
     "confidence": 92,
     "tags": [
@@ -732,7 +732,7 @@ export const UPLOADED_LEADS: Lead[] = [
     "moveInDate": "1970-01-01T00:00:45.839Z",
     "preferredArea": "Iindiranagar",
     "assignedTcmId": "tcm-3",
-    "stage": "contacted",
+    "stage": "qualified",
     "intent": "hot",
     "confidence": 88,
     "tags": [
@@ -754,7 +754,7 @@ export const UPLOADED_LEADS: Lead[] = [
     "moveInDate": "1970-01-01T00:00:45.839Z",
     "preferredArea": "Koramangala",
     "assignedTcmId": "tcm-4",
-    "stage": "contacted",
+    "stage": "qualified",
     "intent": "hot",
     "confidence": 88,
     "tags": [
@@ -798,7 +798,7 @@ export const UPLOADED_LEADS: Lead[] = [
     "moveInDate": "1970-01-01T00:00:45.839Z",
     "preferredArea": "Near Christ Central campus",
     "assignedTcmId": "tcm-2",
-    "stage": "contacted",
+    "stage": "qualified",
     "intent": "hot",
     "confidence": 92,
     "tags": [
@@ -819,7 +819,7 @@ export const UPLOADED_LEADS: Lead[] = [
     "moveInDate": "0234-06-30T00:00:00.000Z",
     "preferredArea": "Koramangala",
     "assignedTcmId": "tcm-3",
-    "stage": "contacted",
+    "stage": "qualified",
     "intent": "hot",
     "confidence": 88,
     "tags": [
@@ -840,7 +840,7 @@ export const UPLOADED_LEADS: Lead[] = [
     "moveInDate": "1970-01-01T00:00:45.689Z",
     "preferredArea": "Koramangala",
     "assignedTcmId": "tcm-4",
-    "stage": "contacted",
+    "stage": "qualified",
     "intent": "hot",
     "confidence": 88,
     "tags": [
@@ -862,7 +862,7 @@ export const UPLOADED_LEADS: Lead[] = [
     "moveInDate": "1970-01-01T00:00:45.837Z",
     "preferredArea": "Koramangala",
     "assignedTcmId": "tcm-1",
-    "stage": "contacted",
+    "stage": "qualified",
     "intent": "hot",
     "confidence": 88,
     "tags": [
@@ -883,7 +883,7 @@ export const UPLOADED_LEADS: Lead[] = [
     "moveInDate": "1970-01-01T00:00:45.870Z",
     "preferredArea": "Marathahalli",
     "assignedTcmId": "tcm-2",
-    "stage": "contacted",
+    "stage": "qualified",
     "intent": "hot",
     "confidence": 88,
     "tags": [
@@ -904,7 +904,7 @@ export const UPLOADED_LEADS: Lead[] = [
     "moveInDate": "1970-01-01T00:00:45.865Z",
     "preferredArea": "Jain College",
     "assignedTcmId": "tcm-3",
-    "stage": "contacted",
+    "stage": "qualified",
     "intent": "hot",
     "confidence": 88,
     "tags": [
@@ -948,7 +948,7 @@ export const UPLOADED_LEADS: Lead[] = [
     "moveInDate": "1970-01-01T00:00:45.835Z",
     "preferredArea": "Koramangala",
     "assignedTcmId": "tcm-1",
-    "stage": "contacted",
+    "stage": "qualified",
     "intent": "hot",
     "confidence": 88,
     "tags": [
@@ -990,7 +990,7 @@ export const UPLOADED_LEADS: Lead[] = [
     "moveInDate": "1970-01-01T00:00:45.839Z",
     "preferredArea": "Koramangala",
     "assignedTcmId": "tcm-3",
-    "stage": "contacted",
+    "stage": "qualified",
     "intent": "hot",
     "confidence": 88,
     "tags": [
@@ -1010,7 +1010,7 @@ export const UPLOADED_LEADS: Lead[] = [
     "moveInDate": "1970-01-01T00:00:45.843Z",
     "preferredArea": "Koramangala",
     "assignedTcmId": "tcm-4",
-    "stage": "contacted",
+    "stage": "qualified",
     "intent": "hot",
     "confidence": 88,
     "tags": [
@@ -1031,7 +1031,7 @@ export const UPLOADED_LEADS: Lead[] = [
     "moveInDate": "1970-01-01T00:00:45.839Z",
     "preferredArea": "Near Christ Central campus",
     "assignedTcmId": "tcm-1",
-    "stage": "contacted",
+    "stage": "qualified",
     "intent": "hot",
     "confidence": 92,
     "tags": [
@@ -1160,7 +1160,7 @@ export const UPLOADED_LEADS: Lead[] = [
     "moveInDate": "1970-01-01T00:00:45.853Z",
     "preferredArea": "Ub city",
     "assignedTcmId": "tcm-3",
-    "stage": "contacted",
+    "stage": "qualified",
     "intent": "hot",
     "confidence": 88,
     "tags": [
@@ -1182,7 +1182,7 @@ export const UPLOADED_LEADS: Lead[] = [
     "moveInDate": "1970-01-01T00:00:45.838Z",
     "preferredArea": "Koramangala",
     "assignedTcmId": "tcm-4",
-    "stage": "contacted",
+    "stage": "qualified",
     "intent": "hot",
     "confidence": 92,
     "tags": [
@@ -1975,7 +1975,7 @@ export const UPLOADED_LEADS: Lead[] = [
     "moveInDate": "1970-01-01T00:00:45.834Z",
     "preferredArea": "Near Christ Central campus",
     "assignedTcmId": "tcm-1",
-    "stage": "contacted",
+    "stage": "qualified",
     "intent": "hot",
     "confidence": 92,
     "tags": [
@@ -1996,7 +1996,7 @@ export const UPLOADED_LEADS: Lead[] = [
     "moveInDate": "1970-01-01T00:00:45.839Z",
     "preferredArea": "Koramangala",
     "assignedTcmId": "tcm-2",
-    "stage": "contacted",
+    "stage": "qualified",
     "intent": "hot",
     "confidence": 92,
     "tags": [
@@ -2017,7 +2017,7 @@ export const UPLOADED_LEADS: Lead[] = [
     "moveInDate": "1970-01-01T00:00:45.870Z",
     "preferredArea": "Near Christ Central campus",
     "assignedTcmId": "tcm-3",
-    "stage": "contacted",
+    "stage": "qualified",
     "intent": "hot",
     "confidence": 92,
     "tags": [
@@ -2037,7 +2037,7 @@ export const UPLOADED_LEADS: Lead[] = [
     "moveInDate": "1970-01-01T00:00:45.839Z",
     "preferredArea": "Koramangala",
     "assignedTcmId": "tcm-4",
-    "stage": "contacted",
+    "stage": "qualified",
     "intent": "hot",
     "confidence": 92,
     "tags": [
@@ -2058,7 +2058,7 @@ export const UPLOADED_LEADS: Lead[] = [
     "moveInDate": "1970-01-01T00:00:45.870Z",
     "preferredArea": "Koramangala",
     "assignedTcmId": "tcm-1",
-    "stage": "contacted",
+    "stage": "qualified",
     "intent": "hot",
     "confidence": 92,
     "tags": [
@@ -2079,7 +2079,7 @@ export const UPLOADED_LEADS: Lead[] = [
     "moveInDate": "1970-01-01T00:00:45.836Z",
     "preferredArea": "Koramangala",
     "assignedTcmId": "tcm-2",
-    "stage": "contacted",
+    "stage": "qualified",
     "intent": "hot",
     "confidence": 92,
     "tags": [
@@ -2100,7 +2100,7 @@ export const UPLOADED_LEADS: Lead[] = [
     "moveInDate": "1970-01-01T00:00:45.853Z",
     "preferredArea": "SG Palya",
     "assignedTcmId": "tcm-3",
-    "stage": "contacted",
+    "stage": "qualified",
     "intent": "hot",
     "confidence": 88,
     "tags": [
@@ -2121,7 +2121,7 @@ export const UPLOADED_LEADS: Lead[] = [
     "moveInDate": "1970-01-01T00:00:45.870Z",
     "preferredArea": "Near Christ Central campus",
     "assignedTcmId": "tcm-4",
-    "stage": "contacted",
+    "stage": "qualified",
     "intent": "hot",
     "confidence": 92,
     "tags": [
@@ -2141,7 +2141,7 @@ export const UPLOADED_LEADS: Lead[] = [
     "moveInDate": "1970-01-01T00:00:45.839Z",
     "preferredArea": "SG Palya",
     "assignedTcmId": "tcm-1",
-    "stage": "contacted",
+    "stage": "qualified",
     "intent": "hot",
     "confidence": 92,
     "tags": [
@@ -2162,7 +2162,7 @@ export const UPLOADED_LEADS: Lead[] = [
     "moveInDate": "1970-01-01T00:00:45.843Z",
     "preferredArea": "Near Christ Central campus",
     "assignedTcmId": "tcm-2",
-    "stage": "contacted",
+    "stage": "qualified",
     "intent": "hot",
     "confidence": 92,
     "tags": [
@@ -2184,7 +2184,7 @@ export const UPLOADED_LEADS: Lead[] = [
     "moveInDate": "1970-01-01T00:00:45.834Z",
     "preferredArea": "Koramangala",
     "assignedTcmId": "tcm-3",
-    "stage": "contacted",
+    "stage": "qualified",
     "intent": "hot",
     "confidence": 92,
     "tags": [
@@ -2205,7 +2205,7 @@ export const UPLOADED_LEADS: Lead[] = [
     "moveInDate": "1970-01-01T00:00:45.853Z",
     "preferredArea": "BTM",
     "assignedTcmId": "tcm-4",
-    "stage": "contacted",
+    "stage": "qualified",
     "intent": "hot",
     "confidence": 92,
     "tags": [
@@ -2225,7 +2225,7 @@ export const UPLOADED_LEADS: Lead[] = [
     "moveInDate": "1970-01-01T00:00:45.853Z",
     "preferredArea": "Koramangala",
     "assignedTcmId": "tcm-1",
-    "stage": "contacted",
+    "stage": "qualified",
     "intent": "hot",
     "confidence": 92,
     "tags": [
@@ -2288,7 +2288,7 @@ export const UPLOADED_LEADS: Lead[] = [
     "moveInDate": "1970-01-01T00:00:45.838Z",
     "preferredArea": "Koramangala",
     "assignedTcmId": "tcm-4",
-    "stage": "contacted",
+    "stage": "qualified",
     "intent": "hot",
     "confidence": 92,
     "tags": [
@@ -2309,7 +2309,7 @@ export const UPLOADED_LEADS: Lead[] = [
     "moveInDate": "1970-01-01T00:00:45.838Z",
     "preferredArea": "Koramangala",
     "assignedTcmId": "tcm-1",
-    "stage": "contacted",
+    "stage": "qualified",
     "intent": "hot",
     "confidence": 92,
     "tags": [
@@ -2331,7 +2331,7 @@ export const UPLOADED_LEADS: Lead[] = [
     "moveInDate": "1970-01-01T00:00:45.845Z",
     "preferredArea": "Koramangala",
     "assignedTcmId": "tcm-2",
-    "stage": "contacted",
+    "stage": "qualified",
     "intent": "hot",
     "confidence": 92,
     "tags": [
@@ -2353,7 +2353,7 @@ export const UPLOADED_LEADS: Lead[] = [
     "moveInDate": "1970-01-01T00:00:45.848Z",
     "preferredArea": "Koramangala",
     "assignedTcmId": "tcm-3",
-    "stage": "contacted",
+    "stage": "qualified",
     "intent": "hot",
     "confidence": 92,
     "tags": [
@@ -2416,7 +2416,7 @@ export const UPLOADED_LEADS: Lead[] = [
     "moveInDate": "1970-01-01T00:00:45.834Z",
     "preferredArea": "Bellandur",
     "assignedTcmId": "tcm-2",
-    "stage": "contacted",
+    "stage": "qualified",
     "intent": "hot",
     "confidence": 88,
     "tags": [
@@ -2520,7 +2520,7 @@ export const UPLOADED_LEADS: Lead[] = [
     "moveInDate": "1970-01-01T00:00:45.837Z",
     "preferredArea": "Near Christ Central campus",
     "assignedTcmId": "tcm-3",
-    "stage": "contacted",
+    "stage": "qualified",
     "intent": "hot",
     "confidence": 92,
     "tags": [

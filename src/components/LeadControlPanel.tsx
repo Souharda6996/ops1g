@@ -85,7 +85,7 @@ export function LeadControlPanel() {
 
 export function LeadDetailView({ leadId, onClear, isDrawer = false }: { leadId: string, onClear?: () => void, isDrawer?: boolean }) {
   const {
-    leads, properties, tours, activities, tcms,
+    leads, properties, tours, activities, tcms, selectLead,
     setLeadStage, setLeadIntent, setLeadFollowUp, addLeadTag, removeLeadTag,
     scheduleTour, cancelTour, rescheduleTour, completeTour, setDecision, updatePostTour,
     addNote, logCall, sendMessage, autoAssignLead, startSequence, closeDeal,

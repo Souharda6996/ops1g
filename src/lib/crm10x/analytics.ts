@@ -15,7 +15,7 @@ import type { CallRecord, ObjectionRecord, MessageOutcome } from "./types";
  * Powers the "where leads slow down" timeline on Manager Dash.
  * ============================================================ */
 const STAGE_ORDER: Lead["stage"][] = [
-  "new", "contacted", "tour-scheduled", "tour-done", "negotiation", "booked",
+  "new", "parsed", "qualified", "inventory-matched", "options-shared", "tour-scheduled", "tour-done", "follow-up", "booked",
 ];
 
 export interface FunnelVelocityRow {
@@ -339,8 +339,8 @@ export function recommendTemplate(input: {
   if (completedTour && lastContactDays >= 1) {
     return { stage: "post-visit", reason: "Tour done — check reaction + push for decision.", urgency: "high" };
   }
-  if (lead.stage === "negotiation") {
-    return { stage: "price-offer", reason: "In negotiation — send time-bound price offer.", urgency: "high" };
+  if (lead.stage === "follow-up") {
+    return { stage: "price-offer", reason: "In follow-up — send time-bound price offer.", urgency: "high" };
   }
   if (lead.stage === "new" || lastContactDays === Infinity) {
     return { stage: "first-intro", reason: "First touch — open with intro + budget hook.", urgency: "high" };

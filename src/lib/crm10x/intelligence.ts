@@ -121,7 +121,7 @@ export function avgStageVelocity(leads: Lead[]): number {
 
 /** Conversion funnel between consecutive stages. */
 export function funnelMetrics(leads: Lead[]) {
-  const order: Lead["stage"][] = ["new","contacted","tour-scheduled","tour-done","negotiation","booked"];
+  const order: Lead["stage"][] = ["new", "parsed", "qualified", "inventory-matched", "options-shared", "tour-scheduled", "tour-done", "follow-up", "booked"];
   const counts = order.map((stage) => leads.filter((l) =>
     order.indexOf(l.stage) >= order.indexOf(stage)).length);
   return order.map((stage, i) => {

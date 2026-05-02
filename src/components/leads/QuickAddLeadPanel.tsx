@@ -20,7 +20,7 @@ import { useIdentityStore } from "@/lib/lead-identity/store";
 import { detectZone, parseLead } from "@/lib/lead-identity/parser";
 import { teamMembers } from "@/myt/lib/mock-data";
 import { toast } from "sonner";
-import { Save, Repeat2, Phone, MapPin, Sparkles, X, CalendarPlus } from "lucide-react";
+import { Save, Repeat2, Phone, MapPin, Sparkles, X, CalendarPlus, Users, Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "@/shims/react-router-dom";
 import { useAppState } from "@/myt/lib/app-context";

@@ -1,69 +1,59 @@
-# Gharpayy Lead Management CRM — MVP
+# Gharpayy 30x Inventory-Aligned Operating Plan — CRM
 
-A high-performance Lead Management CRM designed for **Gharpayy**, a Bangalore-based co-living and Paying Guest (PG) accommodation company. This platform enables sales teams to manage inbound leads, track tour schedules, and convert prospects into residents through data-driven scoring and SLA enforcement.
+A high-performance Lead Management CRM designed for **Gharpayy**, a Bangalore-based co-living and Paying Guest (PG) accommodation company. This platform implements the **30x Inventory-Aligned Operating Plan**, focusing on supply-first routing, role-based discipline, and automated SLA enforcement.
 
 ## 🚀 Overview
 
-Gharpayy CRM streamlines the journey from lead acquisition (Instagram, Google, Referrals) to booking. It provides sales managers and TCMs (Tour & Conversion Managers) with a real-time view of their pipeline, ranked by deal probability.
+Gharpayy CRM manages the entire operating loop:
+`Lead paste` → `Parse` → `Duplicate check` → `Area demand` → `Inventory match` → `Flow Ops schedules Tour` → `TCM closes Tour` → `HR monitors` → `Owner supplies rooms`
 
-### 🔄 Lead Lifecycle Workflow
+### 🔄 Operating Loop
 ```mermaid
 graph LR
-    Lead([Inbound Lead]) --> Ingest[Pipeline Ingestion]
-    Ingest --> Score{Scoring Engine}
-    Score --> High[Hot: Immediate Call]
-    Score --> Low[Warm/Cold: Sequence]
-    High --> Tour[Tour Scheduled]
-    Tour --> Visit[Property Visit]
-    Visit --> Post[Post-Tour Follow-up]
-    Post --> Close[Booking Confirmed]
+    Lead([Inbound Lead]) --> Parse[Auto-Parser]
+    Parse --> Match{Inventory Match}
+    Match --> Flow[Flow Ops: Schedule Tour]
+    Flow --> TCM[TCM: Close Tour]
+    TCM --> Booked((Booking Confirmed))
     
-    style Close fill:#22c55e,color:#fff
-    style High fill:#f97316,color:#fff
+    style Booked fill:#22c55e,color:#fff
+    style Match fill:#f97316,color:#fff
 ```
 
 ![Gharpayy Dashboard](./docs/screenshots/dashboard.png)
 
+## ✨ Key Operating Pillars
+
+### 1. The 10-Stage Funnel
+We standardized the lead journey into 10 distinct, measurable stages:
+`new` → `parsed` → `qualified` → `inventory-matched` → `options-shared` → `tour-scheduled` → `tour-done` → `follow-up` → `booked` → `dropped`
+
+### 2. Supply-First Routing
+- **Zero Phantom Properties**: Every lead is matched against real-time supply from the Supply Hub PG data only.
+- **Inventory Intelligence**: The system calculates vacancy and demand per zone (e.g., Koramangala, Indiranagar) to prioritize where leads are assigned.
+
+### 3. Role-Based Discipline
+- **Flow Ops**: 90-minute triage cycles to clear the inbox. Focused on speed and inventory fit.
+- **TCM (Territory Closure Manager)**: Zone-specific dashboards with prioritized "Hot Tours".
+- **War Room (Founder/HR)**: Monitoring MRR, SLA breaches, and "bleeding" areas where supply outstrips demand.
+
 ## 🛠 Tech Stack
 
 - **Framework**: React 19 + TypeScript
-- **Routing & SSR**: TanStack Start (Router + File-based routing)
-- **State Management**: Zustand + Persistence (LocalStorage)
+- **State Management**: Zustand + Persistence
+- **State Logic**: 30x Operating Engine (Pure JS/TS)
 - **Styling**: Tailwind CSS 4.0
-- **UI Components**: Shadcn UI (Radix)
-- **Drag & Drop**: @dnd-kit
-- **Date Management**: date-fns
-
-## ✨ Core Features
-
-### 📊 Intelligent Pipeline (Kanban)
-- **Score-Based Sorting**: Leads in each column are automatically ranked by their calculated probability score.
-- **SLA Enforcement**: Real-time clocks show hours remaining before an SLA breach (e.g., 2h for New leads).
-- **Overdue Filtering**: One-click toggle to focus only on leads requiring immediate attention.
-
-### 🎯 Lead Scoring Engine
-Leads are dynamically ranked (0-100) based on:
-- **Budget**: High-value leads (+20)
-- **Urgency**: Move-in within 7 days (+30)
-- **Source**: Referral leads (+15)
-- **Confidence**: Manual sales assessment (+25)
-
-### 📄 Dedicated Lead Management
-Each lead has a URL-addressable dedicated page (`/leads/$leadId`) containing:
-- **Lead Dossier**: Detailed preferences and history.
-- **Control Panel**: Stage transitions, template messaging, and sequence triggers.
-- **Tour Scheduling**: Integrated booking and post-tour outcome tracking.
-- **Handoff Threads**: Collaboration between FlowOps and TCMs.
+- **UI Components**: Radix + Shadcn UI
+- **Terminology**: Globally unified as **"Tours"** (replacing "Visits").
 
 ## 🏁 Getting Started
 
 ### Prerequisites
 - Node.js (v18+)
-- npm or bun
+- npm
 
 ### Installation
 ```bash
-cd ops1g
 npm install
 ```
 
@@ -71,14 +61,14 @@ npm install
 ```bash
 npm run dev
 ```
-Open [http://localhost:8081](http://localhost:8081) in your browser.
+Open [http://localhost:8081](http://localhost:8081).
 
 ## 📂 Project Structure
 - `src/lib/scoring.ts`: Core Lead Scoring Algorithm.
-- `src/lib/overdue.ts`: SLA and Overdue calculation logic.
-- `src/routes/`: File-based routing (Pipeline, Leads, Dashboard).
-- `src/components/`: Reusable UI modules (Kanban, Control Panel, Atoms).
-- `src/lib/store.ts`: Global state management with Zustand.
+- `src/lib/overdue.ts`: 30x Operating Plan SLA logic.
+- `src/myt/lib/inventory-intelligence.ts`: Real-time supply/demand engine.
+- `src/lib/uploaded-leads.ts`: Standardized 10-stage lead data.
+- `src/myt/pages/WarRoom.tsx`: Executive monitoring cockpit.
 
 ---
-Built for the Gharpayy Internship Assignment.
+Built for the Gharpayy 30x Operating Plan Integration.

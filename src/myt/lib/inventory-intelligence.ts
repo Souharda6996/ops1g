@@ -11,6 +11,8 @@ export interface InventoryFit {
   basePrice: number;
   score: number;
   reason: string;
+  zoneId: string;
+  priceFit: number;
 }
 
 export function detectAreaZone(text: string): Zone {
@@ -78,7 +80,9 @@ export function bestInventoryFits({ areaText, budget, room, rooms, blocks, limit
       area: p.area,
       basePrice: p.basePrice,
       score,
-      reason: reasons.join(", ")
+      reason: reasons.join(", "),
+      zoneId: p.zoneId,
+      priceFit: budget ? Math.min(1, budget / p.basePrice) : 1
     };
   });
 
