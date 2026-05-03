@@ -1,12 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Sparkles, Flame } from "lucide-react";
 import { useApp } from "@/lib/store";
 import { useGame, whoKey } from "@/lib/gamification";
 import { useMountedNow } from "@/hooks/use-now";
 import { buildCoachReport } from "@/lib/coach";
-import { CoachPanel } from "./CoachPanel";
 import { cn } from "@/lib/utils";
+
+const CoachPanel = lazy(() => import("./CoachPanel").then(m => ({ default: m.CoachPanel })));
 
 /**
  * Floating "Coach" launcher — shows the user a pulsing ring when there are
@@ -141,7 +142,9 @@ export function CoachWidget() {
             </span>
           </SheetTitle>
         </SheetHeader>
-        <CoachPanel compact />
+        <Suspense fallback={<div className="h-40 flex items-center justify-center text-xs text-muted-foreground animate-pulse">loading_coach...</div>}>
+          <CoachPanel compact />
+        </Suspense>
       </SheetContent>
     </Sheet>
   );

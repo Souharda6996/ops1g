@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, lazy, Suspense } from "react";
 import { Link } from "@tanstack/react-router";
 import { useApp, getProperty, getTcm } from "@/lib/store";
 import { cn } from "@/lib/utils";
@@ -16,13 +16,15 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { ConfidenceBar, IntentChip, StageBadge } from "./atoms";
-import { HandoffThread } from "./HandoffThread";
+
+// Lazy load feature-rich panels to keep LeadControlPanel under control
+const HandoffThread = lazy(() => import("./HandoffThread").then(m => ({ default: m.HandoffThread })));
+const SupplyMatchPanel = lazy(() => import("./leads/SupplyMatchPanel").then(m => ({ default: m.SupplyMatchPanel })));
+const PostVisitGate = lazy(() => import("./crm10x/PostVisitGate").then(m => ({ default: m.PostVisitGate })));
+const CommitmentBanner = lazy(() => import("./crm10x/CommitmentBanner").then(m => ({ default: m.CommitmentBanner })));
+const ObjectionTag = lazy(() => import("./crm10x/ObjectionLogger").then(m => ({ default: m.ObjectionTag })));
+const LeadDossierPanel = lazy(() => import("./crm10x/LeadDossierPanel").then(m => ({ default: m.LeadDossierPanel })));
 import { SequenceChip } from "./SequenceChip";
-import { SupplyMatchPanel } from "./leads/SupplyMatchPanel";
-import { PostVisitGate } from "./crm10x/PostVisitGate";
-import { CommitmentBanner } from "./crm10x/CommitmentBanner";
-import { ObjectionTag } from "./crm10x/ObjectionLogger";
-import { LeadDossierPanel } from "./crm10x/LeadDossierPanel";
 import {
   Phone, MessageSquare, Calendar as CalendarIcon, Tag, ClipboardCheck,
   AlertTriangle, CheckCircle2, X, Activity as ActivityIcon, MapPin,
@@ -212,7 +214,9 @@ export function LeadDetailView({ leadId, onClear, isDrawer = false }: { leadId: 
               <Zap className="h-3 w-3 text-accent" />
               <span className="text-[10px] font-bold text-accent">Score: {score}</span>
             </div>
-            <ObjectionTag leadId={lead.id} />
+            <Suspense fallback={null}>
+              <ObjectionTag leadId={lead.id} />
+            </Suspense>
             {isOverdue && (
               <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-destructive/10 border border-destructive/20 animate-pulse">
                 <AlertTriangle className="h-3 w-3 text-destructive" />
@@ -229,8 +233,10 @@ export function LeadDetailView({ leadId, onClear, isDrawer = false }: { leadId: 
         </div>
 
         {/* CRM 10x — commitment banner + 48h post-visit gate */}
-        <CommitmentBanner lead={lead} />
-        <PostVisitGate lead={lead} />
+        <Suspense fallback={null}>
+          <CommitmentBanner lead={lead} />
+          <PostVisitGate lead={lead} />
+        </Suspense>
 
         {/* Stale alert */}
         {pendingPostTour && (
@@ -262,12 +268,16 @@ export function LeadDetailView({ leadId, onClear, isDrawer = false }: { leadId: 
             </TabsList>
 
             <TabsContent value="dossier" className="space-y-4 pt-4">
-              <LeadDossierPanel lead={lead} />
+              <Suspense fallback={<div className="h-40 flex items-center justify-center text-xs animate-pulse">loading_dossier...</div>}>
+                <LeadDossierPanel lead={lead} />
+              </Suspense>
             </TabsContent>
 
             <TabsContent value="best-fit" className="space-y-4 pt-4">
               <Section title="Best property matches">
-                <SupplyMatchPanel lead={lead} onNavigateAway={() => selectLead(null)} />
+                <Suspense fallback={<div className="h-40 flex items-center justify-center text-xs animate-pulse">finding_matches...</div>}>
+                  <SupplyMatchPanel lead={lead} onNavigateAway={() => selectLead(null)} />
+                </Suspense>
               </Section>
             </TabsContent>
 
@@ -712,7 +722,9 @@ export function LeadDetailView({ leadId, onClear, isDrawer = false }: { leadId: 
             {/* HANDOFF — FlowOps ↔ TCM thread for this lead */}
             <TabsContent value="handoff" className="pt-4">
               <Section title="FlowOps ↔ TCM thread">
-                <HandoffThread leadId={lead.id} />
+                <Suspense fallback={<div className="h-40 flex items-center justify-center text-xs animate-pulse">loading_thread...</div>}>
+                  <HandoffThread leadId={lead.id} />
+                </Suspense>
               </Section>
             </TabsContent>
 

@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useAppState } from '@/myt/lib/app-context';
 import { zones } from '@/myt/lib/mock-data';
 import { TrendingUp, AlertTriangle, Target, Zap, Crosshair } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip, BarChart, Bar, Cell } from 'recharts';
+import { LazyBarChart, LazyAreaChart, Recharts } from '@/components/LazyCharts';
 import { cn } from '@/lib/utils';
 import { GlueFeed } from '@/components/GlueFeed';
 import { buildAreaOperatingRows } from '@/myt/lib/inventory-intelligence';
@@ -137,14 +137,12 @@ export default function WarRoom() {
           <div className="flex items-center gap-2 text-xs text-muted-foreground uppercase tracking-wide">
             <TrendingUp className="h-3.5 w-3.5" /> Next 7-Day Revenue (₹k)
           </div>
-          <ResponsiveContainer width="100%" height={120}>
-            <LineChart data={data.forecast}>
-              <XAxis dataKey="day" stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} />
-              <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} width={28} />
-              <Tooltip contentStyle={{ background: 'hsl(var(--popover))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 11 }} />
-              <Line type="monotone" dataKey="expected" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 3 }} />
-            </LineChart>
-          </ResponsiveContainer>
+          <LazyAreaChart data={data.forecast} height={120}>
+            <Recharts.XAxis dataKey="day" stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} />
+            <Recharts.YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} width={28} />
+            <Recharts.Tooltip contentStyle={{ background: 'hsl(var(--popover))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 11 }} />
+            <Recharts.Line type="monotone" dataKey="expected" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 3 }} />
+          </LazyAreaChart>
         </div>
 
         {/* Tile 3 — Conversion by zone */}
@@ -152,18 +150,16 @@ export default function WarRoom() {
           <div className="flex items-center gap-2 text-xs text-muted-foreground uppercase tracking-wide">
             <Zap className="h-3.5 w-3.5" /> Conversion Rate by Zone
           </div>
-          <ResponsiveContainer width="100%" height={120}>
-            <BarChart data={data.zoneConv}>
-              <XAxis dataKey="zone" stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} />
-              <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} width={28} unit="%" />
-              <Tooltip contentStyle={{ background: 'hsl(var(--popover))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 11 }} />
-              <Bar dataKey="rate" radius={[4, 4, 0, 0]}>
-                {data.zoneConv.map((d, i) => (
-                  <Cell key={i} fill={d.rate >= 60 ? 'hsl(var(--tcm))' : d.rate >= 35 ? 'hsl(var(--hr))' : 'hsl(var(--danger))'} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+          <LazyBarChart data={data.zoneConv} height={120}>
+            <Recharts.XAxis dataKey="zone" stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} />
+            <Recharts.YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} width={28} unit="%" />
+            <Recharts.Tooltip contentStyle={{ background: 'hsl(var(--popover))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 11 }} />
+            <Recharts.Bar dataKey="rate" radius={[4, 4, 0, 0]}>
+              {data.zoneConv.map((d, i) => (
+                <Recharts.Cell key={i} fill={d.rate >= 60 ? 'hsl(var(--tcm))' : d.rate >= 35 ? 'hsl(var(--hr))' : 'hsl(var(--danger))'} />
+              ))}
+            </Recharts.Bar>
+          </LazyBarChart>
         </div>
 
         {/* Tile 4 — Top leak point */}

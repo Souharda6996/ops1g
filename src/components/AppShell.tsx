@@ -10,19 +10,20 @@ import { ProfileMenu } from "./ProfileMenu";
 import { useApp } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { ReactNode } from "react";
-import { LeadControlPanel } from "./LeadControlPanel";
-import { CommandPalette } from "./CommandPalette";
-import { CoachWidget } from "./CoachWidget";
+import { ReactNode, useEffect, useMemo, lazy, Suspense } from "react";
 import { useNow, useMountedNow } from "@/hooks/use-now";
 import { buildDoNextQueue } from "@/lib/engine";
 import { useGame, whoKey } from "@/lib/gamification";
 import { useCRM10x } from "@/lib/crm10x/store";
-import { useEffect, useMemo } from "react";
 import { PictureInPictureProvider, PipMount, usePip } from "./pip/PipProvider";
 import { PipButton } from "./pip/PipButton";
 import { usePipRouteSync } from "./pip/usePipSync";
 import { activePersona } from "@/lib/personas";
+
+// Lazy load heavy components to save 1.6MB from main bundle
+const LeadControlPanel = lazy(() => import("./LeadControlPanel").then(m => ({ default: m.LeadControlPanel })));
+const CommandPalette = lazy(() => import("./CommandPalette").then(m => ({ default: m.CommandPalette })));
+const CoachWidget = lazy(() => import("./CoachWidget").then(m => ({ default: m.CoachWidget })));
 
 function PipRouteSyncBridge() {
   const { active } = usePip();
@@ -324,9 +325,11 @@ export function AppShell({ children }: { children: ReactNode }) {
       </nav>
 
       {/* Overlays */}
-      <LeadControlPanel />
-      <CommandPalette />
-      <CoachWidget />
+      <Suspense fallback={null}>
+        <LeadControlPanel />
+        <CommandPalette />
+        <CoachWidget />
+      </Suspense>
       </div>
     </PictureInPictureProvider>
   );

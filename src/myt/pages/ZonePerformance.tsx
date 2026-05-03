@@ -1,6 +1,6 @@
 import { useAppState } from '@/myt/lib/app-context';
 import { getZonePerformance, zones, teamMembers } from '@/myt/lib/mock-data';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { LazyBarChart, Recharts } from '@/components/LazyCharts';
 import { cn } from '@/lib/utils';
 
 export default function ZonePerformance() {
@@ -21,16 +21,14 @@ export default function ZonePerformance() {
       <div className="glass-card p-3 md:p-5">
         <h3 className="font-heading font-semibold text-xs md:text-sm mb-3 text-foreground">Tours by Zone</h3>
         <div className="h-48 md:h-72">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData}>
-              <XAxis dataKey="name" tick={{ fill: 'hsl(215 12% 50%)', fontSize: 10 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: 'hsl(215 12% 50%)', fontSize: 10 }} axisLine={false} tickLine={false} width={25} />
-              <Tooltip contentStyle={{ background: 'hsl(220 18% 12%)', border: '1px solid hsl(220 14% 16%)', borderRadius: '8px', fontSize: '11px', color: 'hsl(210 20% 92%)' }} />
-              <Bar dataKey="tours" fill="hsl(217 91% 60%)" radius={[3, 3, 0, 0]} opacity={0.8} name="Scheduled" />
-              <Bar dataKey="completed" fill="hsl(152 69% 45%)" radius={[3, 3, 0, 0]} opacity={0.8} name="Completed" />
-              <Bar dataKey="drafts" fill="hsl(38 92% 50%)" radius={[3, 3, 0, 0]} opacity={0.8} name="Drafts" />
-            </BarChart>
-          </ResponsiveContainer>
+          <LazyBarChart data={chartData} height="100%">
+            <Recharts.XAxis dataKey="name" tick={{ fill: 'hsl(215 12% 50%)', fontSize: 10 }} axisLine={false} tickLine={false} />
+            <Recharts.YAxis tick={{ fill: 'hsl(215 12% 50%)', fontSize: 10 }} axisLine={false} tickLine={false} width={25} />
+            <Recharts.Tooltip contentStyle={{ background: 'hsl(220 18% 12%)', border: '1px solid hsl(220 14% 16%)', borderRadius: '8px', fontSize: '11px', color: 'hsl(210 20% 92%)' }} />
+            <Recharts.Bar dataKey="tours" fill="hsl(217 91% 60%)" radius={[3, 3, 0, 0]} opacity={0.8} name="Scheduled" />
+            <Recharts.Bar dataKey="completed" fill="hsl(152 69% 45%)" radius={[3, 3, 0, 0]} opacity={0.8} name="Completed" />
+            <Recharts.Bar dataKey="drafts" fill="hsl(38 92% 50%)" radius={[3, 3, 0, 0]} opacity={0.8} name="Drafts" />
+          </LazyBarChart>
         </div>
       </div>
 
